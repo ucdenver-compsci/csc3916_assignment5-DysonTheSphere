@@ -87,7 +87,7 @@ router.post('/signin', function (req, res) {
         })
     })
 });
-router.route('/movies')
+router.route('/movielist')
     .get((req, res) => {
         if (req.query.review == "true")
         {
@@ -168,15 +168,15 @@ router.route('/movies')
     })
 router.route('/movies/:movieparameter')
     .get((req, res) => {
-        title = req.params.movieparameter;
-        Movie.find({title: title}).exec(function(err, movie) {  
+        id = req.params.movieparameter;
+        Movie.find({_id: id}).exec(function(err, movie) {  
             if (err)
                 console.log(err);
             if (movie.length == 1)
             {
                 if (req.query.review == "true")
                 {
-                    Reviews.find({movieId: movie[0]._id.toString()}).exec(function(err, reviews) {
+                    Reviews.find({movieId: id}).exec(function(err, reviews) {
                         if (err)
                         {
                             console.log(err);
