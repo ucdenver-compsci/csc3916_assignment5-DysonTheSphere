@@ -87,7 +87,7 @@ router.post('/signin', function (req, res) {
         })
     })
 });
-router.route('/movielist')
+router.route('/movies')
     .get((req, res) => {
         if (req.query.review == "true")
         {
