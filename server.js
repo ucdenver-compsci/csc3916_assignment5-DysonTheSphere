@@ -198,7 +198,7 @@ router.route('/movies/:movieparameter')
                 {
                     console.log(err)
                 }
-                res.json({success: true, movies: doc});
+                res.json({success: true, movie: doc});
             });
         }
         else
