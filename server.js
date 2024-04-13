@@ -15,6 +15,7 @@ var cors = require('cors');
 var User = require('./Users');
 var Movie = require('./Movies');
 var Reviews = require('./Reviews');
+var mongoose = require('mongoose');
 
 var app = express();
 app.use(cors());
@@ -169,32 +170,53 @@ router.route('/movies')
 router.route('/movies/:movieparameter')
     .get((req, res) => {
         id = req.params.movieparameter;
-        Movie.find({_id: id}).exec(function(err, movie) {  
-            if (err)
-                console.log(err);
-            if (movie.length == 1)
-            {
-                if (req.query.review == "true")
+        if (req.query.review == "true")
+        {
+            const aggregate = [
                 {
-                    Reviews.find({movieId: id}).exec(function(err, reviews) {
-                        if (err)
-                        {
-                            console.log(err);
-                            return res.json(err);
-                        }
-                        res.json({success: true, movie: movie, reviews: reviews});
-                    })                    
+                    $match: {
+                        _id : mongoose.Types.ObjectId(id)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'reviews',
+                        localField: '_id',
+                        foreignField: 'movieId',
+                        as: 'reviews'
+                    }
+                },
+                {
+                  $addFields: {
+                    avgRating: { $avg: '$reviews.rating' }
+                  }
                 }
-                else
+            ];
+            Movie.aggregate(aggregate).exec(function(err, doc) 
+            {
+                if (err)
+                {
+                    console.log(err)
+                }
+                res.json({success: true, movies: doc});
+            });
+        }
+        else
+        {
+            Movie.find({_id: id}).exec(function(err, movie) {  
+                if (err)
+                    console.log(err);
+                if (movie.length == 1)
                 {
                     res.json ({success: true, movie: movie});
                 }
-            }
-            else 
-            {
-                res.json({success: false});
-            }
-        })
+                else 
+                {
+                    res.json({success: false});
+                }
+            })
+        }
+        
     })
     .put(authJwtController.isAuthenticated, (req,res) => {
         title = req.params.movieparameter;
