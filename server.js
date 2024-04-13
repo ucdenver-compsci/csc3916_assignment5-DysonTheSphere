@@ -90,7 +90,7 @@ router.post('/signin', function (req, res) {
 });
 router.route('/movies')
     .get((req, res) => {
-        if (req.query.review == "true")
+        if (req.query.reviews == "true")
         {
             const aggregate = [
                 {
@@ -170,7 +170,7 @@ router.route('/movies')
 router.route('/movies/:movieparameter')
     .get((req, res) => {
         id = req.params.movieparameter;
-        if (req.query.review == "true")
+        if (req.query.reviews == "true")
         {
             const aggregate = [
                 {
